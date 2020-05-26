@@ -1,0 +1,22 @@
+{
+  "name": "virtual-choir-tools",
+  "version": "0.1.0",
+  "bin": {
+    "virtual-choir-tools": "bin/virtual-choir-tools.js"
+  },
+  "scripts": {
+    "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
+    "cdk": "cdk",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "1.41.0",
+    "aws-cdk": "1.41.0",
+    "jest": "^25.5.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-lambda": "^1.41.0",
+    "@aws-cdk/aws-s3": "^1.41.0",
+    "@aws-cdk/core": "1.41.0"
+  }
+}
