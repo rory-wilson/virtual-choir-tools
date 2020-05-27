@@ -74,7 +74,12 @@ const proprocess = async (args) => {
 
 var args = process.argv.slice(2);
 try {
-    proprocess(args);
+    if (args.length != 1) {
+        console.log('Usage: preprocess <sourcefolder>')
+
+    } else {
+        proprocess(args);
+    }
 } catch (error) {
     console.error(error);
 }

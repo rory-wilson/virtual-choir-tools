@@ -4,11 +4,22 @@ const fsp = require('fs').promises;
 const moment = require('moment');
 const path = require('path');
 
+const OUTPUTSIZE = '1280x720';
+
 const LAYOUTS = {
-    3: '0_0|0_h0|0_h0+h1',
     4: '0_0|0_h0|w0_0|w0_h0',
     9: '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1',
+    16: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2',
+    25: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|w0+w1+w2+w3_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|w0+w1+w2+w3_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|w0+w1+w2+w3_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2|w0+w1+w2+w3_h0+h1+h2|0_h0+h1+h2+h3|w0_h0+h1+h2+h3|w0+w1_h0+h1+h2+h3|w0+w1+w2_h0+h1+h2+h3|w0+w1+w2+w3_h0+h1+h2+h3',
     36: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|w0+w1+w2+w3_0|w0+w1+w2+w3+w4_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|w0+w1+w2+w3_h0|w0+w1+w2+w3+w4_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|w0+w1+w2+w3_h0+h1|w0+w1+w2+w3+w4_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2|w0+w1+w2+w3_h0+h1+h2|w0+w1+w2+w3+w4_h0+h1+h2|0_h0+h1+h2+h3|w0_h0+h1+h2+h3|w0+w1_h0+h1+h2+h3|w0+w1+w2_h0+h1+h2+h3|w0+w1+w2+w3_h0+h1+h2+h3|w0+w1+w2+w3+w4_h0+h1+h2+h3|0_h0+h1+h2+h3+h4|w0_h0+h1+h2+h3+h4|w0+w1_h0+h1+h2+h3+h4|w0+w1+w2_h0+h1+h2+h3+h4|w0+w1+w2+w3_h0+h1+h2+h3+h4|w0+w1+w2+w3+w4_h0+h1+h2+h3+h4'
+}
+
+const SCALES = {
+    4: 'vga',
+    9: 'qvga',
+    16: 'qvga',
+    25: 'qqvga',
+    36: 'qqvga'
 }
 
 const loadEdit = async (filepath) => {
@@ -25,7 +36,9 @@ const makeGrid = async (cut, sourceDir, destinationPath) => {
     const inputCount = sourceFiles.length;
     const { start, duration } = cut;
     const layout = LAYOUTS[inputCount];
+    const scale = SCALES[inputCount];
 
+    console.log('')
     console.log(`Making a grid of ${sourceFiles.length} images from ${start} for ${duration} seconds, saving to ${destinationPath}`);
     const startString = moment().startOf('day').seconds(start).format('HH:mm:ss');
     const files = sourceFiles.map(file => `-ss ${startString} -t ${duration} -i ${file}`).join(' ');
@@ -34,17 +47,18 @@ const makeGrid = async (cut, sourceDir, destinationPath) => {
     for (j = 0; j < sourceFiles.length; j++) {
         inputMatrix.push(j);
     }
-    const inputMatrixString = inputMatrix.map(x => `[${x}:v] setpts=PTS-STARTPTS, scale=qvga [a${x}];`).join('');
+    const inputMatrixString = inputMatrix.map(x => `[${x}:v] setpts=PTS-STARTPTS, scale=${scale} [a${x}];`).join('');
     const inputLabels = inputMatrix.map(x => `[a${x}]`).join('');
-    return await run(`ffmpeg -y ${files} -filter_complex "${inputMatrixString}${inputLabels}xstack=inputs=${inputCount}:layout=${layout}[v]" -map "[v]" ${destinationPath}`);
+    return await run(`ffmpeg -y ${files} -s ${OUTPUTSIZE} -filter_complex "${inputMatrixString}${inputLabels}xstack=inputs=${inputCount}:layout=${layout}[v]" -map "[v]" ${destinationPath}`);
 }
 
 const concat = async (sourceFiles, workingDir, destinationPath) => {
+    console.log('')
     console.log(`Concatenating ${sourceFiles.length} saving to ${destinationPath}`);
     const fileListPath = path.join(workingDir, 'filelist.txt');
     await fsp.writeFile(fileListPath, sourceFiles.map(file => `file '${file}'`).join('\n'));
 
-    return await run(`ffmpeg -y -f concat -safe 0 -i ${fileListPath} -c copy ${destinationPath}`);
+    return await run(`ffmpeg -y -f concat -safe 0 -i ${fileListPath} ${destinationPath}`);
 }
 
 const make = async (args) => {
@@ -71,7 +85,11 @@ const make = async (args) => {
 
 var args = process.argv.slice(2);
 try {
-    make(args);
+    if (args.length != 2) {
+        console.log('Usage: make <sourcefolder> <jsonfile>')
+    } else {
+        make(args);
+    }
 } catch (error) {
     console.error(error);
 }
