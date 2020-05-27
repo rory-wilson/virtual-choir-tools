@@ -5,18 +5,17 @@
     "virtual-choir-tools": "bin/virtual-choir-tools.js"
   },
   "scripts": {
-    "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
-    "cdk": "cdk",
-    "test": "jest"
+    "clean": "rm output/*.* && rm working/*.*",
+    "preprocess": "babel-node src/preprocess.js",
+    "make": "babel-node src/make.js"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.41.0",
-    "aws-cdk": "1.41.0",
-    "jest": "^25.5.0"
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.4"
   },
   "dependencies": {
-    "@aws-cdk/aws-lambda": "^1.41.0",
-    "@aws-cdk/aws-s3": "^1.41.0",
-    "@aws-cdk/core": "1.41.0"
+    "moment": "^2.26.0"
   }
 }
