@@ -32,16 +32,19 @@ const run = async (cmd) => {
 }
 
 const makeGrid = async (cut, sourceDir, destinationPath) => {
-    const sourceFiles = cut.clips.map(clip => path.join(sourceDir, clip));
+    const sourceFiles = cut.clips;
     const inputCount = sourceFiles.length;
     const { start, duration } = cut;
-    const layout = LAYOUTS[inputCount];
-    const scale = SCALES[inputCount];
+    const layout = cut.layout ? cut.layout : LAYOUTS[inputCount];
+    const scale = cut.layout ? 'qvga' : SCALES[inputCount];
 
     console.log('')
     console.log(`Making a grid of ${sourceFiles.length} images from ${start} for ${duration} seconds, saving to ${destinationPath}`);
     const startString = moment().startOf('day').seconds(start).format('HH:mm:ss');
-    const files = sourceFiles.map(file => `-ss ${startString} -t ${duration} -i ${file}`).join(' ');
+    const files = sourceFiles.map(file => {
+        return file ? `-ss ${startString} -t ${duration} -i ${path.join(sourceDir, file)}` :
+            `-i ${path.join(sourceDir, '../static/black.png')}`
+    }).join(' ');
 
     const inputMatrix = [];
     for (j = 0; j < sourceFiles.length; j++) {
