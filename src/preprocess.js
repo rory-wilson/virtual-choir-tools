@@ -43,11 +43,22 @@ const trimVideo = async (sourcePath, destinationPath, silenceJSON) => {
     const start = silenceJSON[0].end;
     const end = silenceJSON[silenceJSON.length - 1].start;
 
-    const startString = moment().startOf('day').seconds(start).format('HH:mm:ss');
+    //const startString = moment().startOf('day').seconds(start).format('HH:mm:ss');
 
-    console.log(`Trimming from ${startString}`);
+    console.log(`Trimming from ${start}`);
 
-    return await run(`ffmpeg -y -ss ${startString} -i ${sourcePath} -c copy ${destinationPath}`);
+    return await run(`ffmpeg -y -ss ${start} -i ${sourcePath} -c copy ${destinationPath}`);
+}
+
+const isVideo = filename => {
+    const filenamelowercase = filename.toLowerCase();
+    const validExtensions = ['mov', 'mp4', 'm4v'];
+    for (i = 0; i < validExtensions.length; i++) {
+        if (filenamelowercase.indexOf(validExtensions[i] > 1)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 const proprocess = async (args) => {
@@ -57,7 +68,7 @@ const proprocess = async (args) => {
     let files = await fsp.readdir(sourceDir);
     console.time('Total Time');
 
-    for (file of files.filter(f => f.indexOf('.mov') > 1 || f.indexOf('.mp4') > 1)) {
+    for (file of files.filter(isVideo) {
         console.log('\n*********')
         console.time(file);
         const sourcePath = path.join(sourceDir, file);

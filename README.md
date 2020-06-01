@@ -32,7 +32,7 @@ This will trim your video and output an mp3 and video into the output folder.
 
 ### Make script:
 
-`npm run make <sourcefolder> <jsonfile>`
+`npm run make <sourcefolder> <jsonfile> <adjustmentgile(optional)>`
 
 This will create a video 'final.mp4' in the output folder based on the edit json file.
 
@@ -59,3 +59,9 @@ Where an array of `cuts` is defined as an array of `clips`, and a `start` and `d
 An empty string `""` for a clip will render a black box in that space, which can be used for layout padding.
 
 If the `layout` property is specified then this will be used to layout the clips instead of the default grids. See https://ffmpeg.org/ffmpeg-filters.html#xstack for more details of layouts.
+
+You can specify an optional adjustment file for any tweaks to the start time of any videos (if they're not completely in sync!. This takes the format:
+
+    {
+        "sop1.mov": 0.5 // seconds
+    }

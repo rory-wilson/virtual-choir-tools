@@ -22,7 +22,7 @@ const SCALES = {
     36: 'qqvga'
 }
 
-const loadEdit = async (filepath) => {
+const loadJSON = async (filepath) => {
     const source = await fsp.readFile(filepath, 'utf8');
     return JSON.parse(source);
 }
@@ -31,7 +31,7 @@ const run = async (cmd) => {
     return exec(cmd);
 }
 
-const makeGrid = async (cut, sourceDir, destinationPath) => {
+const makeGrid = async (cut, sourceDir, destinationPath, ajustment) => {
     const sourceFiles = cut.clips;
     const inputCount = sourceFiles.length;
     const { start, duration } = cut;
@@ -40,9 +40,11 @@ const makeGrid = async (cut, sourceDir, destinationPath) => {
 
     console.log('')
     console.log(`Making a grid of ${sourceFiles.length} images from ${start} for ${duration} seconds, saving to ${destinationPath}`);
-    const startString = moment().startOf('day').seconds(start).format('HH:mm:ss');
+
     const files = sourceFiles.map(file => {
-        return file ? `-ss ${startString} -t ${duration} -i ${path.join(sourceDir, file)}` :
+        const startSeconds = ajustment[file] ? start + ajustment[file] : start;
+
+        return file ? `-ss ${startSeconds} -t ${duration} -i ${path.join(sourceDir, file)}` :
             `-i ${path.join(sourceDir, '../static/black.png')}`
     }).join(' ');
 
@@ -70,7 +72,8 @@ const make = async (args) => {
     const workingDir = path.join(__dirname, '../', 'working');
     const outputDir = path.join(__dirname, '../', 'output');
 
-    const editJson = await loadEdit(args[1]);
+    const editJson = await loadJSON(args[1]);
+    const ajustment = args[2] ? loadJSON(args[2]) : {};
     const tempFiles = [];
 
     // cut
@@ -78,7 +81,7 @@ const make = async (args) => {
         const cut = editJson.cuts[i];
         const destinationFile = path.join(workingDir, `${i}.mp4`);
         tempFiles.push(destinationFile);
-        await makeGrid(cut, sourceDir, destinationFile);
+        await makeGrid(cut, sourceDir, destinationFile, ajustment);
     }
 
     // join
@@ -89,7 +92,7 @@ const make = async (args) => {
 var args = process.argv.slice(2);
 try {
     if (args.length != 2) {
-        console.log('Usage: make <sourcefolder> <jsonfile>')
+        console.log('Usage: make <sourcefolder> <jsonfile> <adjustmentfile(optional)>')
     } else {
         make(args);
     }
