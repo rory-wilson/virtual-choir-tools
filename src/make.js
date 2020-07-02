@@ -1,8 +1,6 @@
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
 const fsp = require('fs').promises;
-const moment = require('moment');
 const path = require('path');
+const { run, loadJSON } = require('./utils');
 
 const OUTPUTSIZE = '1280x720';
 
@@ -15,28 +13,21 @@ const LAYOUTS = {
 }
 
 const SCALES = {
-    4: 'vga',
-    9: 'qvga',
-    16: 'qvga',
-    25: 'qqvga',
-    36: 'qqvga'
-}
-
-const loadJSON = async (filepath) => {
-    const source = await fsp.readFile(filepath, 'utf8');
-    return JSON.parse(source);
-}
-const run = async (cmd) => {
-    console.log(cmd);
-    return exec(cmd);
+    4: '640:360',
+    9: '512:288',
+    16: '384:216',
+    25: '256:144',
+    36: '128:72'
 }
 
 const makeGrid = async (cut, sourceDir, destinationPath, ajustment) => {
     const sourceFiles = cut.clips;
+    const border = cut.border;
     const inputCount = sourceFiles.length;
     const { start, duration } = cut;
     const layout = cut.layout ? cut.layout : LAYOUTS[inputCount];
     const scale = cut.layout ? 'qvga' : SCALES[inputCount];
+    const rowSize = cut.rowSize ? cut.rowSize : Math.sqrt(inputCount);
 
     console.log('')
     console.log(`Making a grid of ${sourceFiles.length} images from ${start} for ${duration} seconds, saving to ${destinationPath}`);
@@ -52,7 +43,11 @@ const makeGrid = async (cut, sourceDir, destinationPath, ajustment) => {
     for (j = 0; j < sourceFiles.length; j++) {
         inputMatrix.push(j);
     }
-    const inputMatrixString = inputMatrix.map(x => `[${x}:v] setpts=PTS-STARTPTS, scale=${scale} [a${x}];`).join('');
+    const inputMatrixString = inputMatrix.map(x => {
+        const leftborder = (x + 1) % rowSize === 0 ? 0 : border;
+        const bottomborder = inputCount - x < rowSize ? 0 : border;
+        return `[${x}:v]pad=iw+${leftborder}:ih+${bottomborder}:color=black,setpts=PTS-STARTPTS, scale=${scale} [a${x}];`
+    }).join('');
     const inputLabels = inputMatrix.map(x => `[a${x}]`).join('');
     return await run(`ffmpeg -y ${files} -s ${OUTPUTSIZE} -filter_complex "${inputMatrixString}${inputLabels}xstack=inputs=${inputCount}:layout=${layout}[v]" -map "[v]" ${destinationPath}`);
 }
@@ -85,8 +80,8 @@ const make = async (args) => {
     }
 
     // join
-    const destinationFile = path.join(outputDir, `final.mp4`);
-    await concat(tempFiles, workingDir, destinationFile)
+    // const destinationFile = path.join(outputDir, `final.mp4`);
+    // await concat(tempFiles, workingDir, destinationFile)
 }
 
 var args = process.argv.slice(2);

@@ -1,7 +1,6 @@
 const fsp = require('fs').promises;
 const path = require('path');
-const { run, isVideo, isAudio } = require('./utils');
-
+const { run, isVideo } = require('./utils');
 
 const extractAudio = async (sourcePath, destinationPath) => {
     console.log(`Extracting audio from ${sourcePath} to ${destinationPath}.mp3`)
@@ -10,7 +9,19 @@ const extractAudio = async (sourcePath, destinationPath) => {
 
 const detectSilence = async (sourcePath, destinationPath) => {
     console.log(`Detecting silence from ${sourcePath} to ${destinationPath}`)
-    return await run(`ffmpeg -i ${sourcePath} -af silencedetect=n=50dB:d=1,ametadata=print:file=${destinationPath} -f null -`);
+    return await run(`ffmpeg -i ${sourcePath} -af silencedetect=n=-30dB:d=5,ametadata=print:file=${destinationPath} -f null -`);
+}
+
+const noiseReduction = async (sourcePath, silenceJSON, silenceSample, silenceProfile, destinationPath) => {
+    console.log(`Reducing noise from ${sourcePath} to ${destinationPath}`)
+    // get silence sample
+    await run(`ffmpeg -y -ss 0 -i ${sourcePath} -t 2  -y -map 0:a -c libmp3lame -q:a 2 ${silenceSample}`);
+
+    // build profile
+    await run(`sox ${silenceSample} -n noiseprof ${silenceProfile}`)
+
+    // apply cancellation
+    return await run(`sox ${sourcePath} ${destinationPath} noisered ${silenceProfile} 0.21`);
 }
 
 const silenceToJson = async (sourcePath, destinationPath) => {
@@ -28,16 +39,12 @@ const silenceToJson = async (sourcePath, destinationPath) => {
         });
     }
     await fsp.writeFile(destinationPath, JSON.stringify(output));
+
     return output;
 }
 
-const trimVideo = async (sourcePath, destinationPath, silenceJSON) => {
-    console.log(`Trimming video from ${sourcePath} to ${destinationPath}`);
-    const start = silenceJSON[0].end;
-    //const startString = moment().startOf('day').seconds(start).format('HH:mm:ss');
-
-    console.log(`Trimming from ${start}`);
-
+const trim = async (sourcePath, destinationPath, start) => {
+    console.log(`Trimming audio from ${sourcePath} to ${destinationPath} at ${start}`);
     return await run(`ffmpeg -y -ss ${start} -i ${sourcePath} -c copy ${destinationPath}`);
 }
 
@@ -48,37 +55,43 @@ const proprocess = async (args) => {
     let files = await fsp.readdir(sourceDir);
     console.time('Total Time');
 
+    const firstSoundLengths = [];
+
     for (file of files.filter(isVideo)) {
         console.log('\n*********')
         console.time(file);
         const sourcePath = path.join(sourceDir, file);
-        const workingPath = path.join(workingDir, file);
+        const workingPath = path.join(workingDir, file + '.mp3');
         const outputPath = path.join(outputDir, file);
+        const outputAudioPath = path.join(outputDir, file + '.mp3');
 
-        const workingAudioFilePath = workingPath + '.mp3';
-        const outputAudioFilePath = outputPath + '.mp3';
         const silenceDetectionFile = workingPath + '_silence.txt';
         const silenceJSONFile = workingPath + '_silence.json';
+        const silenceSampleFile = workingPath + '_silence.mp3';
+        const silenceProfileFile = workingPath + '_silence.prof';
+        const noiseReducedFile = workingPath + '_reduced.mp3';
 
-        // get audio as its faster to work with
-        await extractAudio(sourcePath, workingAudioFilePath);
-        await detectSilence(workingAudioFilePath, silenceDetectionFile)
-        const silence = await silenceToJson(silenceDetectionFile, silenceJSONFile);
+        await extractAudio(sourcePath, workingPath)
+        await detectSilence(workingPath, silenceDetectionFile)
+        let silence = await silenceToJson(silenceDetectionFile, silenceJSONFile);
+        await noiseReduction(workingPath, silence, silenceSampleFile, silenceProfileFile, noiseReducedFile);
 
-        await trimVideo(sourcePath, outputPath, silence);
-        await extractAudio(outputPath, outputAudioFilePath);
+        await trim(sourcePath, outputPath, silence[0].end);
+        await trim(noiseReducedFile, outputAudioPath, silence[0].end);
 
+        firstSoundLengths.push(`${file}, ${silence[0].end}`)
         console.timeEnd(file);
     }
 
-    console.timeEnd('Total Time');
+    await fsp.writeFile(workingDir + '/silences.csv', firstSoundLengths.join('\n'));
 
+    console.timeEnd('Total Time');
 }
 
 var args = process.argv.slice(2);
 try {
     if (args.length < 1) {
-        console.log('Usage: preprocess <sourcefolder>')
+        console.log('Usage: processvideo <sourcefolder>')
 
     } else {
         proprocess(args);

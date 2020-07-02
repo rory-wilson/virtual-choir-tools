@@ -6,7 +6,9 @@
   },
   "scripts": {
     "clean": "rm output/*.* && rm working/*.*",
+    "analyze": "babel-node src/analyze.js",
     "preprocess": "babel-node src/preprocess.js",
+    "processvideo": "babel-node src/processvideo.js",
     "make": "babel-node src/make.js"
   },
   "devDependencies": {
@@ -16,6 +18,7 @@
     "@babel/preset-env": "^7.3.4"
   },
   "dependencies": {
-    "moment": "^2.26.0"
+    "moment": "^2.26.0",
+    "web-audio-api": "^0.2.2"
   }
 }
