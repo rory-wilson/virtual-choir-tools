@@ -9,7 +9,9 @@ const LAYOUTS = {
     9: '0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1',
     16: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2',
     25: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|w0+w1+w2+w3_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|w0+w1+w2+w3_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|w0+w1+w2+w3_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2|w0+w1+w2+w3_h0+h1+h2|0_h0+h1+h2+h3|w0_h0+h1+h2+h3|w0+w1_h0+h1+h2+h3|w0+w1+w2_h0+h1+h2+h3|w0+w1+w2+w3_h0+h1+h2+h3',
-    36: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|w0+w1+w2+w3_0|w0+w1+w2+w3+w4_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|w0+w1+w2+w3_h0|w0+w1+w2+w3+w4_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|w0+w1+w2+w3_h0+h1|w0+w1+w2+w3+w4_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2|w0+w1+w2+w3_h0+h1+h2|w0+w1+w2+w3+w4_h0+h1+h2|0_h0+h1+h2+h3|w0_h0+h1+h2+h3|w0+w1_h0+h1+h2+h3|w0+w1+w2_h0+h1+h2+h3|w0+w1+w2+w3_h0+h1+h2+h3|w0+w1+w2+w3+w4_h0+h1+h2+h3|0_h0+h1+h2+h3+h4|w0_h0+h1+h2+h3+h4|w0+w1_h0+h1+h2+h3+h4|w0+w1+w2_h0+h1+h2+h3+h4|w0+w1+w2+w3_h0+h1+h2+h3+h4|w0+w1+w2+w3+w4_h0+h1+h2+h3+h4'
+    36: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|w0+w1+w2+w3_0|w0+w1+w2+w3+w4_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|w0+w1+w2+w3_h0|w0+w1+w2+w3+w4_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|w0+w1+w2+w3_h0+h1|w0+w1+w2+w3+w4_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2|w0+w1+w2+w3_h0+h1+h2|w0+w1+w2+w3+w4_h0+h1+h2|0_h0+h1+h2+h3|w0_h0+h1+h2+h3|w0+w1_h0+h1+h2+h3|w0+w1+w2_h0+h1+h2+h3|w0+w1+w2+w3_h0+h1+h2+h3|w0+w1+w2+w3+w4_h0+h1+h2+h3|0_h0+h1+h2+h3+h4|w0_h0+h1+h2+h3+h4|w0+w1_h0+h1+h2+h3+h4|w0+w1+w2_h0+h1+h2+h3+h4|w0+w1+w2+w3_h0+h1+h2+h3+h4|w0+w1+w2+w3+w4_h0+h1+h2+h3+h4',
+    49: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|w0+w1+w2+w3_0|w0+w1+w2+w3+w4_0|w0+w1+w2+w3+w4+w5_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|w0+w1+w2+w3_h0|w0+w1+w2+w3+w4_h0|w0+w1+w2+w3+w4+w5_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|w0+w1+w2+w3_h0+h1|w0+w1+w2+w3+w4_h0+h1|w0+w1+w2+w3+w4+w5_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2|w0+w1+w2+w3_h0+h1+h2|w0+w1+w2+w3+w4_h0+h1+h2|w0+w1+w2+w3+w4+w5_h0+h1+h2|0_h0+h1+h2+h3|w0_h0+h1+h2+h3|w0+w1_h0+h1+h2+h3|w0+w1+w2_h0+h1+h2+h3|w0+w1+w2+w3_h0+h1+h2+h3|w0+w1+w2+w3+w4_h0+h1+h2+h3|w0+w1+w2+w3+w4+w5_h0+h1+h2+h3|0_h0+h1+h2+h3+h4|w0_h0+h1+h2+h3+h4|w0+w1_h0+h1+h2+h3+h4|w0+w1+w2_h0+h1+h2+h3+h4|w0+w1+w2+w3_h0+h1+h2+h3+h4|w0+w1+w2+w3+w4_h0+h1+h2+h3+h4|w0+w1+w2+w3+w4+w5_h0+h1+h2+h3+h4|0_h0+h1+h2+h3+h4+h5|w0_h0+h1+h2+h3+h4+h5|w0+w1_h0+h1+h2+h3+h4+h5|w0+w1+w2_h0+h1+h2+h3+h4+h5|w0+w1+w2+w3_h0+h1+h2+h3+h4+h5|w0+w1+w2+w3+w4_h0+h1+h2+h3+h4+h5|w0+w1+w2+w3+w4+w5_h0+h1+h2+h3+h4+h5|',
+    64: '0_0|w0_0|w0+w1_0|w0+w1+w2_0|w0+w1+w2+w3_0|w0+w1+w2+w3+w4_0|w0+w1+w2+w3+w4+w5_0|w0+w1+w2+w3+w4+w5+w6_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|w0+w1+w2+w3_h0|w0+w1+w2+w3+w4_h0|w0+w1+w2+w3+w4+w5_h0|w0+w1+w2+w3+w4+w5+w6_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|w0+w1+w2+w3_h0+h1|w0+w1+w2+w3+w4_h0+h1|w0+w1+w2+w3+w4+w5_h0+h1|w0+w1+w2+w3+w4+w5+w6_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2|w0+w1+w2+w3_h0+h1+h2|w0+w1+w2+w3+w4_h0+h1+h2|w0+w1+w2+w3+w4+w5_h0+h1+h2|w0+w1+w2+w3+w4+w5+w6_h0+h1+h2|0_h0+h1+h2+h3|w0_h0+h1+h2+h3|w0+w1_h0+h1+h2+h3|w0+w1+w2_h0+h1+h2+h3|w0+w1+w2+w3_h0+h1+h2+h3|w0+w1+w2+w3+w4_h0+h1+h2+h3|w0+w1+w2+w3+w4+w5_h0+h1+h2+h3|w0+w1+w2+w3+w4+w5+w6_h0+h1+h2+h3|0_h0+h1+h2+h3+h4|w0_h0+h1+h2+h3+h4|w0+w1_h0+h1+h2+h3+h4|w0+w1+w2_h0+h1+h2+h3+h4|w0+w1+w2+w3_h0+h1+h2+h3+h4|w0+w1+w2+w3+w4_h0+h1+h2+h3+h4|w0+w1+w2+w3+w4+w5_h0+h1+h2+h3+h4|w0+w1+w2+w3+w4+w5+w6_h0+h1+h2+h3+h4|0_h0+h1+h2+h3+h4+h5|w0_h0+h1+h2+h3+h4+h5|w0+w1_h0+h1+h2+h3+h4+h5|w0+w1+w2_h0+h1+h2+h3+h4+h5|w0+w1+w2+w3_h0+h1+h2+h3+h4+h5|w0+w1+w2+w3+w4_h0+h1+h2+h3+h4+h5|w0+w1+w2+w3+w4+w5_h0+h1+h2+h3+h4+h5|w0+w1+w2+w3+w4+w5+w6_h0+h1+h2+h3+h4+h5|0_h0+h1+h2+h3+h4+h5+h6|w0_h0+h1+h2+h3+h4+h5+h6|w0+w1_h0+h1+h2+h3+h4+h5+h6|w0+w1+w2_h0+h1+h2+h3+h4+h5+h6|w0+w1+w2+w3_h0+h1+h2+h3+h4+h5+h6|w0+w1+w2+w3+w4_h0+h1+h2+h3+h4+h5+h6|w0+w1+w2+w3+w4+w5_h0+h1+h2+h3+h4+h5+h6|w0+w1+w2+w3+w4+w5+w6_h0+h1+h2+h3+h4+h5+h6'
 }
 
 const SCALES = {
@@ -17,7 +19,9 @@ const SCALES = {
     9: '512:288',
     16: '384:216',
     25: '256:144',
-    36: '128:72'
+    36: '128:72',
+    49: '128:72',
+    64: '128:72'
 }
 
 const makeGrid = async (cut, sourceDir, destinationPath, ajustment) => {
@@ -52,20 +56,10 @@ const makeGrid = async (cut, sourceDir, destinationPath, ajustment) => {
     return await run(`ffmpeg -y ${files} -s ${OUTPUTSIZE} -filter_complex "${inputMatrixString}${inputLabels}xstack=inputs=${inputCount}:layout=${layout}[v]" -map "[v]" ${destinationPath}`);
 }
 
-const concat = async (sourceFiles, workingDir, destinationPath) => {
-    console.log('')
-    console.log(`Concatenating ${sourceFiles.length} saving to ${destinationPath}`);
-    const fileListPath = path.join(workingDir, 'filelist.txt');
-    await fsp.writeFile(fileListPath, sourceFiles.map(file => `file '${file}'`).join('\n'));
-
-    return await run(`ffmpeg -y -f concat -safe 0 -i ${fileListPath} ${destinationPath}`);
-}
-
 const make = async (args) => {
     const sourceDir = path.join(__dirname, '../', args[0]);
 
     const workingDir = path.join(__dirname, '../', 'working');
-    const outputDir = path.join(__dirname, '../', 'output');
 
     const editJson = await loadJSON(args[1]);
     const ajustment = args[2] ? loadJSON(args[2]) : {};
@@ -78,10 +72,6 @@ const make = async (args) => {
         tempFiles.push(destinationFile);
         await makeGrid(cut, sourceDir, destinationFile, ajustment);
     }
-
-    // join
-    // const destinationFile = path.join(outputDir, `final.mp4`);
-    // await concat(tempFiles, workingDir, destinationFile)
 }
 
 var args = process.argv.slice(2);

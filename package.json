@@ -5,8 +5,9 @@
     "virtual-choir-tools": "bin/virtual-choir-tools.js"
   },
   "scripts": {
-    "clean": "rm output/*.* && rm working/*.*",
+    "clean": "rm working/*.* && rm output/*.*",
     "analyze": "babel-node src/analyze.js",
+    "silences": "babel-node src/silences.js",
     "preprocess": "babel-node src/preprocess.js",
     "processvideo": "babel-node src/processvideo.js",
     "make": "babel-node src/make.js"

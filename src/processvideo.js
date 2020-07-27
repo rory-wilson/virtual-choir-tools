@@ -48,6 +48,35 @@ const trim = async (sourcePath, destinationPath, start) => {
     return await run(`ffmpeg -y -ss ${start} -i ${sourcePath} -c copy ${destinationPath}`);
 }
 
+const getStart = (silences) => {
+    const meaningfulNoiseLength = 10;
+
+    if (silences.length === 0)
+        return 0;
+
+    if (silences.length === 1)
+        return silences[0].end - 1;
+
+    const firstNoise = silences[1].start - silences[0].end;
+    if (firstNoise > meaningfulNoiseLength)
+        return silences[0].end - 1;
+
+    if (silences.length === 2)
+        return silences[1].end - 1;
+
+    const secondNoise = silences[2].start - silences[1].end;
+    if (secondNoise > meaningfulNoiseLength)
+        return silences[1].end - 1;
+
+    if (silences.length === 3)
+        return silences[2].end - 1;
+
+    const thirdNoise = silences[3].start - silences[2].end;
+    if (thirdNoise > meaningfulNoiseLength)
+        return silences[2].end - 1;
+
+}
+
 const proprocess = async (args) => {
     const sourceDir = path.join(__dirname, '../', args[0]);
     const workingDir = path.join(__dirname, '../', 'working');
@@ -76,10 +105,11 @@ const proprocess = async (args) => {
         let silence = await silenceToJson(silenceDetectionFile, silenceJSONFile);
         await noiseReduction(workingPath, silence, silenceSampleFile, silenceProfileFile, noiseReducedFile);
 
-        await trim(sourcePath, outputPath, silence[0].end);
-        await trim(noiseReducedFile, outputAudioPath, silence[0].end);
+        const start = getStart(silence);
+        await trim(sourcePath, outputPath, start);
+        await trim(noiseReducedFile, outputAudioPath, start);
 
-        firstSoundLengths.push(`${file}, ${silence[0].end}`)
+        firstSoundLengths.push(`${file}, ${start}`)
         console.timeEnd(file);
     }
 

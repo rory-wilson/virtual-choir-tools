@@ -49,7 +49,8 @@ The json file uses the following format:
             ],
             "start": 4,
             "duration": 30,
-            "layout": ""
+            "layout": "",
+            "border": 10
         }
     ]
     }
