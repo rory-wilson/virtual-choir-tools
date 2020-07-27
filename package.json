@@ -19,7 +19,6 @@
     "@babel/preset-env": "^7.3.4"
   },
   "dependencies": {
-    "moment": "^2.26.0",
-    "web-audio-api": "^0.2.2"
+    "moment": "^2.26.0"
   }
 }
