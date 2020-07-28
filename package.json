@@ -6,10 +6,9 @@
   },
   "scripts": {
     "clean": "rm working/*.* && rm output/*.*",
-    "analyze": "babel-node src/analyze.js",
     "silences": "babel-node src/silences.js",
-    "preprocess": "babel-node src/preprocess.js",
-    "processvideo": "babel-node src/processvideo.js",
+    "process": "babel-node src/process.js",
+    "resize": "babel-node src/resize.js",
     "make": "babel-node src/make.js"
   },
   "devDependencies": {
