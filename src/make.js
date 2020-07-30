@@ -3,7 +3,7 @@ const path = require("path");
 const { run, loadJSON } = require("./utils");
 
 const OUTPUTSIZE = "1280x720";
-const BORDERCOLOR = "black";
+const BORDERCOLOR = "white";
 
 const LAYOUTS = {
   4: "0_0|0_h0|w0_0|w0_h0",
@@ -25,7 +25,7 @@ const SCALES = {
   64: "128:72",
 };
 
-const makeGrid = async (cut, sourceDir, destinationPath, ajustment) => {
+const makeGrid = async (cut, destinationPath, ajustment) => {
   const sourceFiles = cut.clips;
   const border = cut.border;
   const inputCount = sourceFiles.length;
@@ -44,10 +44,12 @@ const makeGrid = async (cut, sourceDir, destinationPath, ajustment) => {
       const startSeconds = ajustment[file] ? start + ajustment[file] : start;
 
       return file
-        ? `-ss ${startSeconds} -t ${duration} -i ${path.join(sourceDir, file)}`
+        ? `-ss ${startSeconds} -t ${duration} -i ${file}`
         : `-t ${duration} -i ${path.join(__dirname, "../static/black.mov")}`;
     })
     .join(" ");
+
+  // `-f lavfi -i color=${BORDERCOLOR}:${scale.replace(":","x")}:d=3,format=rgb24`
 
   const inputMatrix = [];
   for (j = 0; j < sourceFiles.length; j++) {
@@ -56,30 +58,34 @@ const makeGrid = async (cut, sourceDir, destinationPath, ajustment) => {
   const inputMatrixString = inputMatrix
     .map((x) => {
       const leftborder = (x + 1) % rowSize === 0 ? 0 : border;
-      const bottomborder = inputCount - x < rowSize ? 0 : border;
+      const bottomborder = inputCount - (x + 1) < rowSize ? 0 : border;
       return `[${x}:v]pad=iw+${leftborder}:ih+${bottomborder}:color=${BORDERCOLOR},setpts=PTS-STARTPTS, scale=${scale} [a${x}];`;
     })
     .join("");
   const inputLabels = inputMatrix.map((x) => `[a${x}]`).join("");
   return await run(
-    `ffmpeg -y ${files} -s ${OUTPUTSIZE} -filter_complex "${inputMatrixString}${inputLabels}xstack=inputs=${inputCount}:layout=${layout}[v]" -map "[v]" -an -preset superfast ${destinationPath}`
+    `ffmpeg -y ${files} -s ${OUTPUTSIZE} -filter_complex "${inputMatrixString}${inputLabels}xstack=inputs=${inputCount}:layout=${layout}[v]" -map "[v]" -an -preset superfast -c:a copy ${destinationPath}`
   );
 };
 
 const make = async (args) => {
-  const sourceDir = args[0];
-  const workingDir = path.join(__dirname, "../", "working");
-  const editJson = await loadJSON(args[1]);
-  const ajustment = args[2] ? loadJSON(args[2]) : {};
+  const outputDir = path.join(__dirname, "../", "output");
+  const editJson = await loadJSON(args[0]);
+  const ajustment = args[1] ? loadJSON(args[1]) : {};
   const tempFiles = [];
   console.time("Total Time");
 
   // cut
   for (i = 0; i < editJson.cuts.length; i++) {
     const cut = editJson.cuts[i];
-    const destinationFile = path.join(workingDir, `${i}.mp4`);
+    const filename = cut.filename || i;
+    console.time(filename);
+
+    const destinationFile = path.join(outputDir, `${filename}.mp4`);
     tempFiles.push(destinationFile);
-    await makeGrid(cut, sourceDir, destinationFile, ajustment);
+    await makeGrid(cut, destinationFile, ajustment);
+
+    console.timeEnd(filename);
   }
 
   console.timeEnd("Total Time");
@@ -87,10 +93,8 @@ const make = async (args) => {
 
 var args = process.argv.slice(2);
 try {
-  if (args.length != 2) {
-    console.log(
-      "Usage: make <sourcefolder> <jsonfile> <adjustmentfile(optional)>"
-    );
+  if (args.length == 0) {
+    console.log("Usage: make <jsonfile> <adjustmentfile(optional)>");
   } else {
     make(args);
   }
