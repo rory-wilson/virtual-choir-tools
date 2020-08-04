@@ -2,7 +2,7 @@ const fsp = require("fs").promises;
 const path = require("path");
 const { run, loadJSON } = require("./utils");
 
-const OUTPUTSIZE = "1280x720";
+const OUTPUTSIZE = "1920x1080"; //"1280x720";
 const BORDERCOLOR = "white";
 
 const LAYOUTS = {
@@ -45,12 +45,15 @@ const makeGrid = async (cut, destinationPath, ajustment) => {
 
       return file
         ? `-ss ${startSeconds} -t ${duration} -i ${file}`
-        : `-t ${duration} -i ${path.join(__dirname, "../static/black.mov")}`;
+        : `-f lavfi -i color=c=${BORDERCOLOR}:s=${scale.replace(
+            ":",
+            "x"
+          )}:r=30:d=3`;
+      //`-t ${duration} -i ${path.join(__dirname, "../static/black.mov")}`;
     })
     .join(" ");
 
-  // `-f lavfi -i color=${BORDERCOLOR}:${scale.replace(":","x")}:d=3,format=rgb24`
-
+  //
   const inputMatrix = [];
   for (j = 0; j < sourceFiles.length; j++) {
     inputMatrix.push(j);
