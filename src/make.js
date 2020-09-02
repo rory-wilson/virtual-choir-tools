@@ -2,11 +2,11 @@ const fsp = require("fs").promises;
 const path = require("path");
 const { run, loadJSON } = require("./utils");
 
-const OUTPUTSIZE = "1920x1080"; //"1280x720";
+const OUTPUTSIZE = ["1280x720", "1920x1080"];
 const BORDERCOLOR = "white";
 
 const LAYOUTS = {
-  4: "0_0|0_h0|w0_0|w0_h0",
+  4: "0_0|w0_0|0_h0|w0_h0",
   9: "0_0|w0_0|w0+w1_0|0_h0|w0_h0|w0+w1_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1",
   16: "0_0|w0_0|w0+w1_0|w0+w1+w2_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2",
   25: "0_0|w0_0|w0+w1_0|w0+w1+w2_0|w0+w1+w2+w3_0|0_h0|w0_h0|w0+w1_h0|w0+w1+w2_h0|w0+w1+w2+w3_h0|0_h0+h1|w0_h0+h1|w0+w1_h0+h1|w0+w1+w2_h0+h1|w0+w1+w2+w3_h0+h1|0_h0+h1+h2|w0_h0+h1+h2|w0+w1_h0+h1+h2|w0+w1+w2_h0+h1+h2|w0+w1+w2+w3_h0+h1+h2|0_h0+h1+h2+h3|w0_h0+h1+h2+h3|w0+w1_h0+h1+h2+h3|w0+w1+w2_h0+h1+h2+h3|w0+w1+w2+w3_h0+h1+h2+h3",
@@ -25,7 +25,7 @@ const SCALES = {
   64: "128:72",
 };
 
-const makeGrid = async (cut, destinationPath, ajustment) => {
+const makeGrid = async (cut, destinationPath, ajustment, size) => {
   const sourceFiles = cut.clips;
   const border = cut.border;
   const inputCount = sourceFiles.length;
@@ -43,13 +43,16 @@ const makeGrid = async (cut, destinationPath, ajustment) => {
     .map((file) => {
       const startSeconds = ajustment[file] ? start + ajustment[file] : start;
 
+      // return file
+      //   ? `-ss ${startSeconds} -t ${duration} -i ${file}`
+      //   : `-t ${duration} -i ${path.join(__dirname, "../static/black.mov")}`;
+
       return file
         ? `-ss ${startSeconds} -t ${duration} -i ${file}`
         : `-f lavfi -i color=c=${BORDERCOLOR}:s=${scale.replace(
             ":",
             "x"
           )}:r=30:d=3`;
-      //`-t ${duration} -i ${path.join(__dirname, "../static/black.mov")}`;
     })
     .join(" ");
 
@@ -60,14 +63,14 @@ const makeGrid = async (cut, destinationPath, ajustment) => {
   }
   const inputMatrixString = inputMatrix
     .map((x) => {
-      const leftborder = (x + 1) % rowSize === 0 ? 0 : border;
+      const leftborder = (x + 1) % rowSize === 0 ? 0  : border;
       const bottomborder = inputCount - (x + 1) < rowSize ? 0 : border;
       return `[${x}:v]pad=iw+${leftborder}:ih+${bottomborder}:color=${BORDERCOLOR},setpts=PTS-STARTPTS, scale=${scale} [a${x}];`;
     })
     .join("");
   const inputLabels = inputMatrix.map((x) => `[a${x}]`).join("");
   return await run(
-    `ffmpeg -y ${files} -s ${OUTPUTSIZE} -filter_complex "${inputMatrixString}${inputLabels}xstack=inputs=${inputCount}:layout=${layout}[v]" -map "[v]" -an -preset superfast -c:a copy ${destinationPath}`
+    `ffmpeg -y ${files} -s ${size} -filter_complex "${inputMatrixString}${inputLabels}xstack=inputs=${inputCount}:layout=${layout}[v]" -map "[v]" -an -preset superfast -c:a copy ${destinationPath}`
   );
 };
 
@@ -82,11 +85,13 @@ const make = async (args) => {
   for (i = 0; i < editJson.cuts.length; i++) {
     const cut = editJson.cuts[i];
     const filename = cut.filename || i;
+    const size = cut.size || OUTPUTSIZE[0];
+
     console.time(filename);
 
     const destinationFile = path.join(outputDir, `${filename}.mp4`);
     tempFiles.push(destinationFile);
-    await makeGrid(cut, destinationFile, ajustment);
+    await makeGrid(cut, destinationFile, ajustment, size);
 
     console.timeEnd(filename);
   }
