@@ -4,24 +4,24 @@ const { run, isVideo, isAudio } = require('./utils');
 
 const extractAudio = async (sourcePath, destinationPath) => {
     console.log(`Extracting audio from ${sourcePath} to ${destinationPath}.mp3`)
-    return await run(`ffmpeg -i ${sourcePath} -y -map 0:a -c libmp3lame -q:a 2 ${destinationPath}`);
+    return await run(`ffmpeg -i '${sourcePath}' -y -map 0:a -c libmp3lame -q:a 2 '${destinationPath}'`);
 }
 
 const detectSilence = async (sourcePath, destinationPath) => {
     console.log(`Detecting silence from ${sourcePath} to ${destinationPath}`)
-    return await run(`ffmpeg -i ${sourcePath} -af silencedetect=n=-30dB:d=5,ametadata=print:file=${destinationPath} -f null -`);
+    return await run(`ffmpeg -i '${sourcePath}' -af silencedetect=n=-30dB:d=5,ametadata=print:file='${destinationPath}' -f null -`);
 }
 
 const noiseReduction = async (sourcePath, silenceJSON, silenceSample, silenceProfile, destinationPath) => {
     console.log(`Reducing noise from ${sourcePath} to ${destinationPath}`)
     // get silence sample
-    await run(`ffmpeg -y -ss 0 -i ${sourcePath} -t 2  -y -map 0:a -c libmp3lame -q:a 2 ${silenceSample}`);
+    await run(`ffmpeg -y -ss 0 -i '${sourcePath}' -t 2  -y -map 0:a -c libmp3lame -q:a 2 '${silenceSample}'`);
 
     // build profile
-    await run(`sox ${silenceSample} -n noiseprof ${silenceProfile}`)
+    await run(`sox '${silenceSample}' -n noiseprof '${silenceProfile}'`)
 
     // apply cancellation
-    return await run(`sox ${sourcePath} ${destinationPath} noisered ${silenceProfile} 0.21`);
+    return await run(`sox '${sourcePath}' '${destinationPath}' noisered '${silenceProfile}' 0.21`);
 }
 
 const silenceToJson = async (sourcePath, destinationPath) => {
@@ -48,7 +48,7 @@ const silenceToJson = async (sourcePath, destinationPath) => {
 
 const trim = async (sourcePath, destinationPath, start) => {
     console.log(`Trimming audio from ${sourcePath} to ${destinationPath} at ${start}`);
-    return await run(`ffmpeg -y -ss ${start} -i ${sourcePath} -c copy ${destinationPath}`);
+    return await run(`ffmpeg -y -ss ${start} -i '${sourcePath}' -c copy '${destinationPath}'`);
 }
 
 const getStart = (silences) => {
