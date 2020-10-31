@@ -17,7 +17,7 @@ const resize = async (args) => {
     //ffmpeg -i input.mp4 -vcodec libx264 -preset ultrafast -s 1280x720 -acodec copy output.mp4
 
     await run(
-      `ffmpeg -y -i ${sourcePath} -vcodec libx264 -preset ultrafast -s 1280x720 -acodec copy ${outputPath}`
+      `ffmpeg -y -i '${sourcePath}' -vcodec libx264 -preset ultrafast -s 1280x720 -acodec copy '${outputPath}'`
     );
     console.timeEnd(file);
   }
