@@ -48,7 +48,7 @@ const makeGrid = async (cut, destinationPath, ajustment, size) => {
       //   : `-t ${duration} -i ${path.join(__dirname, "../static/black.mov")}`;
 
       return file
-        ? `-ss ${startSeconds} -t ${duration} -i ${file}`
+        ? `-ss ${startSeconds} -t ${duration} -i '${file}'`
         : `-f lavfi -i color=c=${BORDERCOLOR}:s=${scale.replace(
             ":",
             "x"
@@ -89,7 +89,7 @@ const make = async (args) => {
 
     console.time(filename);
 
-    const destinationFile = path.join(outputDir, `${filename}.mp4`);
+    const destinationFile = path.join(outputDir, `'${filename}.mp4'`);
     tempFiles.push(destinationFile);
     await makeGrid(cut, destinationFile, ajustment, size);
 
