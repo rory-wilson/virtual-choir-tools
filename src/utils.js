@@ -34,8 +34,25 @@ const setup = () => {
 }
 
 const run = async (cmd) => {
-  console.log(`\n${cmd}`);
-  return exec(cmd);
+ 
+    console.log(`\nCommand: ${cmd}`);
+
+  try {
+    const promise = exec(cmd);
+    const child = promise.child;
+
+    child.stdout.on('data', function(data) {
+        console.log(data);
+    });
+    child.stderr.on('data', function(data) {
+        console.error(data);
+    });
+
+    return await promise;
+  }
+  catch(error) {
+    console.error(error);
+  }
 };
 
 module.exports = {
