@@ -138,7 +138,7 @@ const proprocess = async (args) => {
 var args = process.argv.slice(2);
 try {
     if (args.length < 1) {
-        console.log('Usage: processvideo <sourcefolder>')
+        console.log('Usage: process <sourcefolder>')
 
     } else {
         proprocess(args);

@@ -27,7 +27,7 @@ const SCALES = {
 
 const makeGrid = async (cut, destinationPath, ajustment, size) => {
   const sourceFiles = cut.clips;
-  const border = cut.border;
+  const border = cut.border || 0;
   const inputCount = sourceFiles.length;
   const { start, duration } = cut;
   const layout = cut.layout ? cut.layout : LAYOUTS[inputCount];
