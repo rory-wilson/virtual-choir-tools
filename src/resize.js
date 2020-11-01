@@ -1,12 +1,13 @@
 const fsp = require("fs").promises;
 const path = require("path");
-const { run, isVideo } = require("./utils");
+const { run, isVideo, setup } = require("./utils");
 
 const resize = async (args) => {
   const sourceDir = args[0];
   const outputDir = path.join(__dirname, "../", "output");
   let files = await fsp.readdir(sourceDir);
   console.time("Total Time");
+  setup();
 
   for (file of files.filter(isVideo)) {
     console.log("\n*********");

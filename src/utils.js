@@ -1,5 +1,6 @@
 const path = require("path");
 const fsp = require("fs").promises;
+const fs = require("fs");
 const util = require("util");
 
 const exec = util.promisify(require("child_process").exec);
@@ -21,6 +22,17 @@ const loadJSON = async (filepath) => {
   return JSON.parse(source);
 };
 
+const createFolderIfNotExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+}
+
+const setup = () => {
+  createFolderIfNotExists('output');
+  createFolderIfNotExists('working');
+}
+
 const run = async (cmd) => {
   console.log(`\n${cmd}`);
   return exec(cmd);
@@ -31,4 +43,6 @@ module.exports = {
   isVideo,
   run,
   loadJSON,
+  createFolderIfNotExists,
+  setup
 };

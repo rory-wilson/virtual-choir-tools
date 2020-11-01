@@ -1,6 +1,6 @@
 const fsp = require('fs').promises;
 const path = require('path');
-const { run, isVideo, isAudio } = require('./utils');
+const { run, isVideo, isAudio, setup } = require('./utils');
 
 const extractAudio = async (sourcePath, destinationPath) => {
     console.log(`Extracting audio from ${sourcePath} to ${destinationPath}.mp3`)
@@ -98,6 +98,7 @@ const proprocess = async (args) => {
     const outputDir = path.join(__dirname, '../', 'output');
     let files = await fsp.readdir(sourceDir);
     console.time('Total Time');
+    setup();
 
     const firstSoundLengths = [];
 

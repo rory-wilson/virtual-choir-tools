@@ -1,6 +1,6 @@
 const fsp = require("fs").promises;
 const path = require("path");
-const { run, loadJSON } = require("./utils");
+const { run, loadJSON, setup } = require("./utils");
 
 const OUTPUTSIZE = ["1280x720", "1920x1080"];
 const BORDERCOLOR = "white";
@@ -81,6 +81,8 @@ const make = async (args) => {
   const tempFiles = [];
   console.time("Total Time");
 
+  setup();
+  
   // cut
   for (i = 0; i < editJson.cuts.length; i++) {
     const cut = editJson.cuts[i];

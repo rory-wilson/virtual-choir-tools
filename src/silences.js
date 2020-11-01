@@ -1,6 +1,6 @@
 const fsp = require('fs').promises;
 const path = require('path');
-const { run, isVideo } = require('./utils');
+const { run, isVideo, setup } = require('./utils');
 
 const detectSilence = async (sourcePath, destinationPath) => {
     console.log(`Detecting silence from ${sourcePath} to ${destinationPath}`)
@@ -32,6 +32,7 @@ const silences = async (args) => {
 
     let files = await fsp.readdir(sourceDir);
     console.time('Total Time');
+    setup();
 
     const firstSoundLengths = [];
 
