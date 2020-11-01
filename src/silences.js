@@ -4,7 +4,7 @@ const { run, isVideo } = require('./utils');
 
 const detectSilence = async (sourcePath, destinationPath) => {
     console.log(`Detecting silence from ${sourcePath} to ${destinationPath}`)
-    return await run(`ffmpeg -i ${sourcePath} -af silencedetect=n=-30dB:d=5,ametadata=print:file=${destinationPath} -f null -`);
+    return await run(`ffmpeg -i '${sourcePath}' -af silencedetect=n=-30dB:d=5,ametadata=print:file='${destinationPath}' -f null -`);
 }
 
 const silenceToJson = async (sourcePath, destinationPath) => {
