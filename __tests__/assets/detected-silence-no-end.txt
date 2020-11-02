@@ -1,0 +1,3 @@
+frame:268  pts:274432  pts_time:5.71733
+lavfi.silence_start=0.725208
+clipDuration=8.853000

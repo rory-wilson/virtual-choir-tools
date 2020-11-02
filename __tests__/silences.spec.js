@@ -5,6 +5,7 @@ const silence = require('../src/silences.js');
 const fsp = require('fs').promises;
 const outputFileName = "output/detected-silence.txt"
 const outputFixtureFileName = "__tests__/assets/detected-silence.txt"
+const outputFixtureNoEndFileName = "__tests__/assets/detected-silence-no-end.txt"
 const silenceJSONFile = "output/silence.json"
 
 describe("Silence detection", () => {
@@ -53,6 +54,16 @@ describe("Convert silence text file to JSON", () => {
       })
     })
   })
+  test("it should gracefully handle a missing end time", () => {
+    return silence.silenceToJson(outputFixtureNoEndFileName, silenceJSONFile).then(() => {
+      return fsp.readFile(silenceJSONFile, 'utf8').then(jsonFileContentString => {
+        let jsonFileContent = JSON.parse(jsonFileContentString)
+          expect(jsonFileContent[0].start).toBe("0.725208")
+          expect(jsonFileContent[0].end).toBe("8.853000")
+      })
+    })
+  })
+
 })
 
 
