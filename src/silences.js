@@ -1,10 +1,11 @@
 const fsp = require('fs').promises;
 const path = require('path');
+const { stderr } = require('process');
 const { run, isVideo, setup } = require('./utils');
 
 const detectSilence = async (sourcePath, destinationPath) => {
     console.log(`Detecting silence from ${sourcePath} to ${destinationPath}`)
-    return await run(`ffmpeg -i '${sourcePath}' -af silencedetect=n=-30dB:d=5,ametadata=print:file='${destinationPath}' -f null -`);
+    return await run(`ffmpeg -i '${sourcePath}' -af silencedetect=n=-30dB:d=5,ametadata=print:file='${destinationPath}' -f null -`)
 }
 
 const getClipDuration = async (sourcePath) => {
@@ -53,8 +54,9 @@ const silences = async (args) => {
         const silenceJSONFile = workingPath + '_silence.json';
 
         await detectSilence(sourcePath, silenceDetectionFile)
+
         let clipDuration = await getClipDuration(sourcePath)
-        fsp.appendFileSync(silenceDetectionFile, "clipDuration=" + clipDuration);
+        await fsp.appendFile(silenceDetectionFile, "clipDuration=" + clipDuration)
         let silence = await silenceToJson(silenceDetectionFile, silenceJSONFile);
 
         firstSoundLengths.push(`${file}, ${silence.map(s => `${s.start},${s.end}`).join(',')}`)
@@ -65,7 +67,7 @@ const silences = async (args) => {
 
     console.timeEnd('Total Time');
 }
-module.exports = { detectSilence, getClipDuration, silenceToJson };
+module.exports = { detectSilence, getClipDuration, silenceToJson, silences };
 
 var args = process.argv.slice(2);
 try {
