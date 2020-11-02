@@ -31,8 +31,9 @@ describe("Silence detection", () => {
         expect(outputFileContents).not.toMatch(/lavfi.silence_end=([\d\.\d]+)/g)      
       })
     });
+    })
   })
-});
+})
 
 describe("Get clip duration as a fallback measure", () => {
   test("it should be able to get clip duration", () => {
