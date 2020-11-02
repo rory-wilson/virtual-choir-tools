@@ -4,10 +4,11 @@ console.error = jest.fn();
 const silence = require('../src/silences.js');
 const fsp = require('fs').promises;
 const outputFileName = "output/detected-silence.txt"
+const outputFixtureFileName = "__tests__/assets/detected-silence.txt"
+const silenceJSONFile = "output/silence.json"
 
 describe("Silence detection", () => {
   let inputFileName = "__tests__/assets/silence_detection.mp4"
-
   test("it should find silence start and end", () => {
     return silence.detectSilence(inputFileName, outputFileName).then(output => {
       checkFfmpegStderr(output.stderr)
@@ -21,7 +22,6 @@ describe("Silence detection", () => {
   })
   test("it should not include an endtime for videos that are silent at the end", () => {
     let inputFileName = "__tests__/assets/silence_detection_no_end.mp4"
-
     return silence.detectSilence(inputFileName, outputFileName).then(output => {
       // Check FFmpeg stderr outputs.
       checkFfmpegStderr(output.stderr)
@@ -30,7 +30,6 @@ describe("Silence detection", () => {
         expect(outputFileContents).toMatch(/lavfi.silence_start=([\d.\d]+)/g)
         expect(outputFileContents).not.toMatch(/lavfi.silence_end=([\d\.\d]+)/g)      
       })
-    });
     })
   })
 })
@@ -44,6 +43,18 @@ describe("Get clip duration as a fallback measure", () => {
   })
 })
 
+describe("Convert silence text file to JSON", () => {
+  test("it should record the start/end times in valid JSON", () => {
+    return silence.silenceToJson(outputFixtureFileName, silenceJSONFile).then(() => {
+      return fsp.readFile(silenceJSONFile, 'utf8').then(jsonFileContentString => {
+        let jsonFileContent = JSON.parse(jsonFileContentString)
+          expect(jsonFileContent[0].start).toBe("0.725208")
+          expect(jsonFileContent[0].end).toBe("16.4535")
+      })
+    })
+  })
+})
+
 
 // Check FFmpeg stderr outputs.
 const checkFfmpegStderr = (stderr) => {
@@ -53,5 +64,6 @@ const checkFfmpegStderr = (stderr) => {
 }
 
 afterAll(() => {
-  const source = fsp.unlink(outputFileName);
+  fsp.unlink(outputFileName);
+  fsp.unlink(silenceJSONFile);
 });

@@ -1,0 +1,5 @@
+frame:268  pts:274432  pts_time:5.71733
+lavfi.silence_start=0.725208
+frame:771  pts:789504  pts_time:16.448
+lavfi.silence_end=16.4535
+lavfi.silence_duration=15.7282
