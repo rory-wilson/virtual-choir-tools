@@ -63,7 +63,7 @@ const silences = async (args) => {
 
     console.timeEnd('Total Time');
 }
-module.exports = { detectSilence, getClipDuration };
+module.exports = { detectSilence, getClipDuration, silenceToJson };
 
 var args = process.argv.slice(2);
 try {
