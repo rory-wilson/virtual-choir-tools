@@ -31,6 +31,13 @@ describe("Silence detection", () => {
       })
     });
   })
+  test("it should be able to get clip duration", () => {
+    let inputFileName = "__tests__/assets/silence_detection_no_end.mp4"
+    return silence.getClipDuration(inputFileName).then(duration => {
+      expect(duration).toBe("8.853000")
+    })
+
+  })
 });
 
 // Check FFmpeg stderr outputs.

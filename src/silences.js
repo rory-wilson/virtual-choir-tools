@@ -8,7 +8,7 @@ const detectSilence = async (sourcePath, destinationPath) => {
 }
 
 const getClipDuration = async (sourcePath) => {
-    return await run(`ffprobe -i '${sourcePath}' -show_format -v quiet | sed -n 's/duration=//p'`)
+    return await (await run(`ffprobe -i '${sourcePath}' -show_format -v quiet | sed -n 's/duration=//p'`)).stdout.trim()
 }
 
 const silenceToJson = async (sourcePath, destinationPath) => {
@@ -63,7 +63,7 @@ const silences = async (args) => {
 
     console.timeEnd('Total Time');
 }
-module.exports = { detectSilence, silenceToJson, silences };
+module.exports = { detectSilence, getClipDuration };
 
 var args = process.argv.slice(2);
 try {
