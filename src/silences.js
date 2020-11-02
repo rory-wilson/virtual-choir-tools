@@ -56,6 +56,7 @@ const silences = async (args) => {
 
     console.timeEnd('Total Time');
 }
+module.exports = { detectSilence, silenceToJson, silences };
 
 var args = process.argv.slice(2);
 try {
@@ -68,3 +69,4 @@ try {
 } catch (error) {
     console.error(error);
 }
+
