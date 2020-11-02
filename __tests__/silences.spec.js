@@ -4,7 +4,6 @@ console.error = jest.fn();
 const silence = require('../src/silences.js');
 const fsp = require('fs').promises;
 const outputFileName = "output/detected-silence.txt"
-const inputFileName = "__tests__/assets/silence_detection.mp4"
 
 describe("Silence detection", () => {
   let inputFileName = "__tests__/assets/silence_detection.mp4"
