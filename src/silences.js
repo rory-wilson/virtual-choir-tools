@@ -7,6 +7,10 @@ const detectSilence = async (sourcePath, destinationPath) => {
     return await run(`ffmpeg -i '${sourcePath}' -af silencedetect=n=-30dB:d=5,ametadata=print:file='${destinationPath}' -f null -`);
 }
 
+const getClipDuration = async (sourcePath) => {
+    return await run(`ffprobe -i '${sourcePath}' -show_format -v quiet | sed -n 's/duration=//p'`)
+}
+
 const silenceToJson = async (sourcePath, destinationPath) => {
     console.log(`Parsing silence from ${sourcePath} to ${destinationPath}`)
     const source = await fsp.readFile(sourcePath, 'utf8');
@@ -14,6 +18,9 @@ const silenceToJson = async (sourcePath, destinationPath) => {
     const endTimeRegex = /lavfi.silence_end=([\d.\d]+)/g;
     const startFound = source.match(startTimeRegex);
     const endFound = source.match(endTimeRegex);
+    if (endFound == null) {
+        endFound = getClipDuration(sourcePath)
+    }
     const output = [];
     for (i = 0; i < startFound.length; i++) {
         output.push({
