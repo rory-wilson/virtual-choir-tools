@@ -17,15 +17,15 @@ const silenceToJson = async (sourcePath, destinationPath) => {
     const startTimeRegex = /lavfi.silence_start=([\d.\d]+)/g;
     const endTimeRegex = /lavfi.silence_end=([\d.\d]+)/g;
     const startFound = source.match(startTimeRegex);
-    const endFound = source.match(endTimeRegex);
+    let endFound = source.match(endTimeRegex);
     if (endFound == null) {
-        endFound = getClipDuration(sourcePath)
+        endFound = source.match(/clipDuration=([\d.\d]+)/g)
     }
     const output = [];
     for (i = 0; i < startFound.length; i++) {
         output.push({
             start: startFound[i].replace('lavfi.silence_start=', ''),
-            end: endFound.length > i ? endFound[i].replace('lavfi.silence_end=', '') : null
+            end: endFound.length > i ? endFound[i].replace('lavfi.silence_end=', '').replace('clipDuration=', '') : null
         });
     }
     await fsp.writeFile(destinationPath, JSON.stringify(output));
@@ -53,6 +53,8 @@ const silences = async (args) => {
         const silenceJSONFile = workingPath + '_silence.json';
 
         await detectSilence(sourcePath, silenceDetectionFile)
+        let clipDuration = await getClipDuration(sourcePath)
+        fsp.appendFileSync(silenceDetectionFile, "clipDuration=" + clipDuration);
         let silence = await silenceToJson(silenceDetectionFile, silenceJSONFile);
 
         firstSoundLengths.push(`${file}, ${silence.map(s => `${s.start},${s.end}`).join(',')}`)
