@@ -32,14 +32,14 @@ describe("Silence detection", () => {
 });
 
 // Check FFmpeg stderr outputs.
-const checkFfmpegStderr = async (stderr) => {
+const checkFfmpegStderr = (stderr) => {
   expect(stderr).toMatch(/silence_start: ([\d.\d]+)/g)
   expect(stderr).toMatch(/silence_end: ([\d.\d]+)/g)
   expect(stderr).toMatch(/silence_duration: ([\d.\d]+)/g)
 }
 
 // Check file contents.
-const checkFileContents = async (contents) => {
+const checkFileContents = (contents) => {
   expect(contents).toMatch(/lavfi.silence_start=([\d.\d]+)/g)
   expect(contents).toMatch(/lavfi.silence_end=([\d\.\d]+)/g)
 }
